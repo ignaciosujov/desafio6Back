@@ -1,0 +1,25 @@
+<div>
+    <h2>{{product.title}}</h2>
+
+    <img src="{{product.thumbnail}}" alt="" height="50">
+
+    Descripción: {{ product.description }}
+    <hr>
+
+    <button class="btn btn-danger" id="delete">Borrar</button>
+</div>
+
+<script>
+    document.querySelector('#delete').onclick = (e) => {
+        const id = "{{ product._id }}"
+
+        fetch(`/product/${id}`, { method: 'DELETE' })
+            .then(() => {
+                alert('Eliminado con exito')
+                document.location.href = '/product'
+            })
+            .catch(e => {
+                alert('No se pudo eliminar')
+            })
+    }
+</script>
