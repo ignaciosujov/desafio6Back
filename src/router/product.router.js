@@ -5,9 +5,59 @@ const router = Router()
 
 // Listar productos
 router.get('/', async(req, res) => {
-    const products = await Product.find().lean().exec()
+    try{
+        /* const limit = req.query.limit ? parseInt(req.query.limit) : 10
+        const page = req.query.page ? parseInt(req.query.page) : 1
+        const query = req.query.query || ''
+        const sort = req.query.sort === 'asc' ? 'asc' : req.query.sort === 'desc' ? 'desc' : '' */
+        
+        /* let products
 
-    res.render('productList', { products })
+        if(!isNaN(limit)){
+            const result = await Product.paginate({}, {limit: limit})
+            products = result.docs.map((product) => ({
+                _id: product._id,
+                title: product.title,
+                description: product.description,
+                img: product.img,
+            }))
+        }else{
+            products = await Product.find().lean().exec()
+        } */
+
+
+        // Parámetros
+        const { limit = 10, query = '', sort = 'asc', page = 1 } = req.query;
+
+        // Filtrar los productos
+        let products = await Product.find().lean().exec();
+
+        // bucar por categoría
+        if (query) {
+            products = products.filter((product) => {
+                return product.category.toLowerCase() === query.toLowerCase();
+            });
+        }
+
+        // ordenamiento por precio (sort)
+        if (sort === 'asc') {
+            products.sort((a, b) => a.price - b.price);
+        } else if (sort === 'desc') {
+            products.sort((a, b) => b.price - a.price);
+        }
+
+        // Filtrar los productos según el límite y la página
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+
+        const limitedProducts = products.slice(startIndex, endIndex);
+
+        res.render('productList', { products: limitedProducts })
+    
+
+    }catch(err) {
+        res.status(500).json({ error: 'Error en la búsqueda de productos' });
+    }
 })
 
 // Pagina para crear productos
