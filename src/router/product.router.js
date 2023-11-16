@@ -6,26 +6,6 @@ const router = Router()
 // Listar productos
 router.get('/', async(req, res) => {
     try{
-        /* const limit = req.query.limit ? parseInt(req.query.limit) : 10
-        const page = req.query.page ? parseInt(req.query.page) : 1
-        const query = req.query.query || ''
-        const sort = req.query.sort === 'asc' ? 'asc' : req.query.sort === 'desc' ? 'desc' : '' */
-        
-        /* let products
-
-        if(!isNaN(limit)){
-            const result = await Product.paginate({}, {limit: limit})
-            products = result.docs.map((product) => ({
-                _id: product._id,
-                title: product.title,
-                description: product.description,
-                img: product.img,
-            }))
-        }else{
-            products = await Product.find().lean().exec()
-        } */
-
-
         // Parámetros
         const { limit = 10, query = '', sort = 'asc', page = 1 } = req.query;
 
@@ -51,9 +31,10 @@ router.get('/', async(req, res) => {
         const endIndex = page * limit;
 
         const limitedProducts = products.slice(startIndex, endIndex);
-
-        res.render('productList', { products: limitedProducts })
-    
+        const user = req.session.user
+        console.log(user)
+        res.render('productList', { products: limitedProducts, user })
+        
 
     }catch(err) {
         res.status(500).json({ error: 'Error en la búsqueda de productos' });
