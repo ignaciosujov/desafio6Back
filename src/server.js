@@ -6,9 +6,11 @@ import mongoose from 'mongoose'
 import __dirname from './util.js'
 import MongoStore from 'connect-mongo'
 import session from 'express-session'
+import initializePassport from './config/passport.config.js'
 
 import viewsRouter from './router/views.router.js'
 import sessionRouter from './router/session.router.js'
+import passport from 'passport'
 
 
 // Inicializamos las variables
@@ -19,6 +21,9 @@ const mongoDBName = 'ecommerce'
 // Para traer la info de POST como JSON
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
+
+
+
 
 // Congiurar el motor de plantillas
 app.engine('handlebars', handlebars.engine())
@@ -40,6 +45,9 @@ app.use(session({
     saveUninitialized: true
 }))
 
+initializePassport()
+app.use(passport.initialize())
+app.use(passport.session())
 
 // Configuracion de rutas
 app.use('/', viewsRouter)
